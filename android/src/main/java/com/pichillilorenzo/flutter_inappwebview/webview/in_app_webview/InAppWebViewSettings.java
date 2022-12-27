@@ -103,6 +103,7 @@ public class InAppWebViewSettings implements ISettings<InAppWebViewInterface> {
   @Nullable
   public Map<String, Object> rendererPriorityPolicy = null;
   public Boolean useShouldInterceptRequest = false;
+  public Boolean useShouldInterceptResponse = false;
   public Boolean useOnRenderProcessGone = false;
   public Boolean disableDefaultErrorPage = false;
   public Boolean useHybridComposition = true;
@@ -359,6 +360,9 @@ public class InAppWebViewSettings implements ISettings<InAppWebViewInterface> {
         case "useShouldInterceptRequest":
           useShouldInterceptRequest = (Boolean) value;
           break;
+        case "useShouldInterceptResponse":
+          useShouldInterceptResponse = (Boolean) value;
+          break;
         case "useOnRenderProcessGone":
           useOnRenderProcessGone = (Boolean) value;
           break;
@@ -483,6 +487,7 @@ public class InAppWebViewSettings implements ISettings<InAppWebViewInterface> {
     settings.put("scrollBarFadeDuration", scrollBarFadeDuration);
     settings.put("rendererPriorityPolicy", rendererPriorityPolicy);
     settings.put("useShouldInterceptRequest", useShouldInterceptRequest);
+    settings.put("useShouldInterceptResponse", useShouldInterceptResponse);
     settings.put("useOnRenderProcessGone", useOnRenderProcessGone);
     settings.put("disableDefaultErrorPage", disableDefaultErrorPage);
     settings.put("useHybridComposition", useHybridComposition);

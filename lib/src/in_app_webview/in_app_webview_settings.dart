@@ -779,6 +779,8 @@ as it can cause framerate drops on animations in Android 9 and lower (see [Hybri
   @SupportedPlatforms(platforms: [AndroidPlatform()])
   bool? useShouldInterceptRequest;
 
+  bool? useShouldInterceptResponse;
+
   ///Set to `true` to be able to listen at the [WebView.onRenderProcessGone] event.
   ///
   ///If the [WebView.onRenderProcessGone] event is implemented and this value is `null`,
@@ -1633,6 +1635,7 @@ as it can cause framerate drops on animations in Android 9 and lower (see [Hybri
     this.regexToCancelSubFramesLoading,
     this.useHybridComposition = true,
     this.useShouldInterceptRequest,
+    this.useShouldInterceptResponse,
     this.useOnRenderProcessGone,
     this.overScrollMode = OverScrollMode_.IF_CONTENT_SCROLLS,
     this.networkAvailable,

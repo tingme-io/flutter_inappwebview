@@ -3,8 +3,6 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:developer' as developer;
-import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -458,6 +456,24 @@ class InAppWebViewController {
                         .androidShouldInterceptRequest(request)))
                 ?.toMap();
           }
+        }
+        break;
+      case "shouldInterceptResponse":
+        if ((_webview != null &&
+                _webview!.shouldInterceptResponse != null) ||
+            _inAppBrowser != null) {
+          Map<String, dynamic> arguments =
+              call.arguments.cast<String, dynamic>();
+          WebResourceResponse response =
+              WebResourceResponse.fromMap(arguments)!;
+
+          if (_webview != null &&
+              _webview!.shouldInterceptResponse != null)
+            return (await _webview!.shouldInterceptResponse!(
+                    this, response))
+                ?.toMap();
+          else
+            return response;
         }
         break;
       case "onRenderProcessUnresponsive":

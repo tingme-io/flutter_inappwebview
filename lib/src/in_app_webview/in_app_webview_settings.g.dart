@@ -1086,6 +1086,8 @@ class InAppWebViewSettings {
   ///- Android native WebView
   bool? useShouldInterceptRequest;
 
+  bool? useShouldInterceptResponse;
+
   ///Set to `true` to be able to listen at the [WebView.shouldOverrideUrlLoading] event.
   ///
   ///If the [WebView.shouldOverrideUrlLoading] event is implemented and this value is `null`,
@@ -1220,6 +1222,7 @@ class InAppWebViewSettings {
       this.regexToCancelSubFramesLoading,
       this.useHybridComposition = true,
       this.useShouldInterceptRequest,
+      this.useShouldInterceptResponse,
       this.useOnRenderProcessGone,
       this.overScrollMode = OverScrollMode.IF_CONTENT_SCROLLS,
       this.networkAvailable,
@@ -1369,6 +1372,7 @@ class InAppWebViewSettings {
       useShouldInterceptAjaxRequest: map['useShouldInterceptAjaxRequest'],
       useShouldInterceptFetchRequest: map['useShouldInterceptFetchRequest'],
       useShouldInterceptRequest: map['useShouldInterceptRequest'],
+      useShouldInterceptResponse: map['useShouldInterceptResponse'],
       useShouldOverrideUrlLoading: map['useShouldOverrideUrlLoading'],
       verticalScrollbarThumbColor: map['verticalScrollbarThumbColor'] != null
           ? UtilColor.fromStringRepresentation(
@@ -1648,6 +1652,7 @@ class InAppWebViewSettings {
       "useShouldInterceptAjaxRequest": useShouldInterceptAjaxRequest,
       "useShouldInterceptFetchRequest": useShouldInterceptFetchRequest,
       "useShouldInterceptRequest": useShouldInterceptRequest,
+      "useShouldInterceptResponse": useShouldInterceptResponse,
       "useShouldOverrideUrlLoading": useShouldOverrideUrlLoading,
       "useWideViewPort": useWideViewPort,
       "userAgent": userAgent,

@@ -1,6 +1,4 @@
 import 'dart:collection';
-import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/src/util.dart';
@@ -282,6 +280,10 @@ class HeadlessInAppWebView implements WebView, Disposable {
     if (this.shouldInterceptRequest != null &&
         settings.useShouldInterceptRequest == null) {
       settings.useShouldInterceptRequest = true;
+    }
+    if (this.shouldInterceptResponse != null &&
+        settings.useShouldInterceptResponse == null) {
+      settings.useShouldInterceptResponse = true;
     }
     if (this.onRenderProcessGone != null &&
         settings.useOnRenderProcessGone == null) {
@@ -835,6 +837,11 @@ class HeadlessInAppWebView implements WebView, Disposable {
   Future<WebResourceResponse?> Function(
           InAppWebViewController controller, WebResourceRequest request)?
       shouldInterceptRequest;
+
+  @override
+  Future<WebResourceResponse?> Function(
+          InAppWebViewController controller, WebResourceResponse response)?
+      shouldInterceptResponse;
 
   ///{@macro flutter_inappwebview.WebView.onCameraCaptureStateChanged}
   @override

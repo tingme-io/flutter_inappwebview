@@ -53,9 +53,18 @@ import com.pichillilorenzo.flutter_inappwebview.webview.WebViewChannelDelegate;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
+
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class InAppWebViewClient extends WebViewClient {
 
@@ -673,6 +682,91 @@ public class InAppWebViewClient extends WebViewClient {
       }
 
       return null;
+    }
+
+    if (webView.customSettings.useShouldInterceptResponse && webView.channelDelegate != null) {
+      try {
+        final String method = request.getMethod();
+        if (!Objects.equals(method, "GET")) return shouldInterceptRequest(view, request.getUrl());
+        Request req = new Request.Builder()
+                .method(method, null)
+                .url(request.getUrl())
+                .headers(Headers.of(request.getHeaders()))
+                .build();
+        final Response response = webView.httpClientNoFollowRedirect.newCall(req).execute();
+        // https://developer.android.com/reference/android/webkit/WebResourceResponse 3xx is not supported
+        if (response.isRedirect()) return null;
+        if (response.body() == null) return null;
+
+        String rawContentType = response.header("content-type") == null ? response.header("Content-Type") : response.header("content-type");
+        String contentTypeString = "";
+        String charsetString = StandardCharsets.UTF_8.toString();
+        if (rawContentType != null) {
+          String[] splitContentType = rawContentType.split(";");
+          if (splitContentType.length > 0) {
+            contentTypeString = splitContentType[0];
+          }
+          if (splitContentType.length > 1) {
+            String[] splitContentEncoding = splitContentType[1].split("=");
+            if (splitContentEncoding.length > 1) {
+              charsetString = splitContentEncoding[1];
+            }
+          }
+        }
+        if (contentTypeString == null || contentTypeString.isEmpty()) {
+          MediaType contentType = response.body().contentType();
+          if (contentType != null) {
+            contentTypeString = contentType.type() + "/" + contentType.subtype();
+            Charset charset = contentType.charset();
+            if (charset != null) {
+              contentTypeString = charset.toString();
+            }
+          }
+        }
+
+        Map<String, String> respHeaders = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : response.headers().toMultimap().entrySet()) {
+          respHeaders.put(entry.getKey(), String.join("; ", entry.getValue()));
+        }
+        byte[] data = new byte[0];
+        if (response.body() != null) {
+          data = Objects.requireNonNull(response.body()).bytes();
+        }
+        int statusCode = 200;
+        String reasonPhrase = null;
+        if (!response.isSuccessful()) {
+          statusCode = response.code();
+          if (!response.message().equals("")) {
+            reasonPhrase = response.message();
+          } else {
+            reasonPhrase = "HTTP " + response.code();
+          }
+        }
+
+        WebResourceResponseExt res = webView.channelDelegate.shouldInterceptResponse(new WebResourceResponseExt(
+                contentTypeString,
+                charsetString,
+                statusCode,
+                reasonPhrase,
+                respHeaders,
+                data
+        ));
+        data =  res.getData();
+        statusCode = 200;
+        if (res.getStatusCode() != null) {
+            statusCode = res.getStatusCode();
+        }
+
+        ByteArrayInputStream inputStream = (data != null) ? new ByteArrayInputStream(data) : null;
+
+        if (res.getHeaders() == null && res.getStatusCode() == null && res.getReasonPhrase() == null) {
+          return new WebResourceResponse(res.getContentType(), res.getContentEncoding(), inputStream);
+        } else {
+          return new WebResourceResponse(res.getContentType(), res.getContentEncoding(), statusCode, res.getReasonPhrase(), res.getHeaders(), inputStream);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     final String url = request.getUrl();

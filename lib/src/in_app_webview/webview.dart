@@ -775,6 +775,10 @@ abstract class WebView {
           InAppWebViewController controller, WebResourceRequest request)?
       shouldInterceptRequest;
 
+  final Future<WebResourceResponse?> Function(
+          InAppWebViewController controller, WebResourceResponse response)?
+      shouldInterceptResponse;
+
   ///Use [onRenderProcessUnresponsive] instead.
   @Deprecated("Use onRenderProcessUnresponsive instead")
   final Future<WebViewRenderProcessAction?> Function(
@@ -1262,6 +1266,7 @@ abstract class WebView {
       @Deprecated('Use shouldInterceptRequest instead')
           this.androidShouldInterceptRequest,
       this.shouldInterceptRequest,
+      this.shouldInterceptResponse,
       @Deprecated('Use onRenderProcessGone instead')
           this.androidOnRenderProcessGone,
       this.onRenderProcessGone,

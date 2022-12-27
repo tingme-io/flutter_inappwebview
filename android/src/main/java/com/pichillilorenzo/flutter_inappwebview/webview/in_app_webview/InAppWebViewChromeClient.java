@@ -1,6 +1,7 @@
 package com.pichillilorenzo.flutter_inappwebview.webview.in_app_webview;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -32,7 +33,9 @@ import android.webkit.MimeTypeMap;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -609,60 +612,64 @@ public class InAppWebViewChromeClient extends WebChromeClient implements PluginR
   }
 
   @Override
-  public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, final Message resultMsg) {
+  public boolean onCreateWindow(WebView view, final boolean isDialog, final boolean isUserGesture, final Message resultMsg) {
     windowAutoincrementId++;
     final int windowId = windowAutoincrementId;
 
-    WebView.HitTestResult result = view.getHitTestResult();
-    String url = result.getExtra();
+    WebView newWebView = new WebView(view.getContext());
+    WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
 
-    // Ensure that images with hyperlink return the correct URL, not the image source
-    if(result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-      Message href = view.getHandler().obtainMessage();
-      view.requestFocusNodeHref(href);
-      Bundle data = href.getData();
-      if (data != null) {
-        String imageUrl = data.getString("url");
-        if(imageUrl != null && !imageUrl.isEmpty()) {
-          url = imageUrl;
-        }
+    view.addView(newWebView);
+
+    transport.setWebView(newWebView);
+    resultMsg.sendToTarget();
+
+    newWebView.setWebViewClient(new WebViewClient() {
+      @SuppressLint("NewApi")
+      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        return shouldOverrideUrlLoading(view, request.getUrl().toString());
       }
-    }
 
-    URLRequest request = new URLRequest(url, "GET", null, null);
-    CreateWindowAction createWindowAction = new CreateWindowAction(
-            request,
-            true,
-            isUserGesture,
-            false,
-            windowId,
-            isDialog
-    );
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView View, String url) {
+        if (url != null && !url.isEmpty()) {
+            URLRequest request = new URLRequest(url, "GET", null, null);
+            CreateWindowAction createWindowAction = new CreateWindowAction(
+                    request,
+                    true,
+                    isUserGesture,
+                    false,
+                    windowId,
+                    isDialog
+            );
 
-    windowWebViewMessages.put(windowId, resultMsg);
+            windowWebViewMessages.put(windowId, resultMsg);
 
-    if (inAppWebView != null && inAppWebView.channelDelegate != null) {
-      inAppWebView.channelDelegate.onCreateWindow(createWindowAction, new WebViewChannelDelegate.CreateWindowCallback() {
-        @Override
-        public boolean nonNullSuccess(@NonNull Boolean handledByClient) {
-          return !handledByClient;
-        }
+            if (inAppWebView != null && inAppWebView.channelDelegate != null) {
+                inAppWebView.channelDelegate.onCreateWindow(createWindowAction, new WebViewChannelDelegate.CreateWindowCallback() {
+                  @Override
+                  public boolean nonNullSuccess(@NonNull Boolean handledByClient) {
+                    return !handledByClient;
+                  }
 
-        @Override
-        public void defaultBehaviour(@Nullable Boolean handledByClient) {
-          InAppWebViewChromeClient.windowWebViewMessages.remove(windowId);
-        }
+                  @Override
+                  public void defaultBehaviour(@Nullable Boolean handledByClient) {
+                    InAppWebViewChromeClient.windowWebViewMessages.remove(windowId);
+                  }
 
-        @Override
-        public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-          Log.e(LOG_TAG, errorCode + ", " + ((errorMessage != null) ? errorMessage : ""));
-          defaultBehaviour(null);
-        }
-      });
+                  @Override
+                  public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+                    Log.e(LOG_TAG, errorCode + ", " + ((errorMessage != null) ? errorMessage : ""));
+                    defaultBehaviour(null);
+                  }
+                });
 
-      return true;
-    }
-
+                return true;
+            }
+          }
+          return true;
+      }
+    });
     return false;
   }
 

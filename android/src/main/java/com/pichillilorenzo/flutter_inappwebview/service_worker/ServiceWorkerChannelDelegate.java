@@ -153,6 +153,7 @@ public class ServiceWorkerChannelDelegate extends ChannelDelegateImpl {
     MethodChannel channel = getChannel();
     if (channel == null) return null;
     final SyncShouldInterceptRequestCallback callback = new SyncShouldInterceptRequestCallback();
+    // TODO 支持 serviceWorker shouldInterceptRequest
     return Util.invokeMethodAndWaitResult(channel, "shouldInterceptRequest", request.toMap(), callback);
   }
 

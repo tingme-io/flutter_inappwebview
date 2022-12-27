@@ -1218,6 +1218,14 @@ public class WebViewChannelDelegate extends ChannelDelegateImpl {
     return Util.invokeMethodAndWaitResult(channel, "shouldInterceptRequest", request.toMap(), callback);
   }
 
+  public WebResourceResponseExt shouldInterceptResponse(WebResourceResponseExt response) throws InterruptedException {
+    MethodChannel channel = getChannel();
+    if (channel == null) return null;
+
+    final SyncShouldInterceptRequestCallback callback = new SyncShouldInterceptRequestCallback();
+    return Util.invokeMethodAndWaitResult(channel, "shouldInterceptResponse", response.toMap(), callback);
+  }
+
   public static class RenderProcessUnresponsiveCallback extends BaseCallbackResultImpl<Integer> {
     @Nullable
     @Override

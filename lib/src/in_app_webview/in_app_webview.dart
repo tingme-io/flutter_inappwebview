@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -125,6 +124,7 @@ class InAppWebView extends StatefulWidget implements WebView {
     @Deprecated('Use shouldInterceptRequest instead')
         this.androidShouldInterceptRequest,
     this.shouldInterceptRequest,
+    this.shouldInterceptResponse,
     @Deprecated('Use onRenderProcessGone instead')
         this.androidOnRenderProcessGone,
     this.onRenderProcessGone,
@@ -662,6 +662,11 @@ class InAppWebView extends StatefulWidget implements WebView {
           InAppWebViewController controller, WebResourceRequest request)?
       shouldInterceptRequest;
 
+  @override
+  final Future<WebResourceResponse?> Function(
+          InAppWebViewController controller, WebResourceResponse response)?
+      shouldInterceptResponse;
+
   ///{@macro flutter_inappwebview.WebView.onCameraCaptureStateChanged}
   @override
   final Future<void> Function(
@@ -887,6 +892,10 @@ class _InAppWebViewState extends State<InAppWebView> {
     if (widget.shouldInterceptRequest != null &&
         settings.useShouldInterceptRequest == null) {
       settings.useShouldInterceptRequest = true;
+    }
+    if (widget.shouldInterceptResponse != null &&
+        settings.useShouldInterceptResponse == null) {
+      settings.useShouldInterceptResponse = true;
     }
     if (widget.onRenderProcessGone != null &&
         settings.useOnRenderProcessGone == null) {

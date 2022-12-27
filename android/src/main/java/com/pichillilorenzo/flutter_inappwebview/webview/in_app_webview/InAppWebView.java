@@ -111,6 +111,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import io.flutter.plugin.common.MethodChannel;
+import okhttp3.OkHttpClient;
 
 final public class InAppWebView extends InputAwareWebView implements InAppWebViewInterface {
   protected static final String LOG_TAG = "InAppWebView";
@@ -172,6 +173,8 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
 
   @Nullable
   public WebViewAssetLoaderExt webViewAssetLoaderExt;
+
+  public OkHttpClient httpClientNoFollowRedirect;
 
   public InAppWebView(Context context) {
     super(context);
@@ -235,6 +238,8 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
 
   @SuppressLint("RestrictedApi")
   public void prepare() {
+    httpClientNoFollowRedirect = new OkHttpClient().newBuilder().followRedirects(false).followSslRedirects(false).build();
+
     if (plugin != null) {
       webViewAssetLoaderExt = WebViewAssetLoaderExt.fromMap(customSettings.webViewAssetLoader, plugin, getContext());
     }

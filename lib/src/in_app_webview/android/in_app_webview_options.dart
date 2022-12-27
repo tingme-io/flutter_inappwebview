@@ -176,6 +176,8 @@ class AndroidInAppWebViewOptions
   ///Set to `true` to be able to listen at the [WebView.androidShouldInterceptRequest] event. The default value is `false`.
   bool useShouldInterceptRequest;
 
+  bool useShouldInterceptResponse;
+
   ///Set to `true` to be able to listen at the [WebView.androidOnRenderProcessGone] event. The default value is `false`.
   bool useOnRenderProcessGone;
 
@@ -279,6 +281,7 @@ class AndroidInAppWebViewOptions
     this.regexToCancelSubFramesLoading,
     this.useHybridComposition = true,
     this.useShouldInterceptRequest = false,
+    this.useShouldInterceptResponse = false,
     this.useOnRenderProcessGone = false,
     this.overScrollMode = AndroidOverScrollMode.OVER_SCROLL_IF_CONTENT_SCROLLS,
     this.networkAvailable,
@@ -341,6 +344,7 @@ class AndroidInAppWebViewOptions
       "useHybridComposition": useHybridComposition,
       "regexToCancelSubFramesLoading": regexToCancelSubFramesLoading,
       "useShouldInterceptRequest": useShouldInterceptRequest,
+      "useShouldInterceptResponse": useShouldInterceptResponse,
       "useOnRenderProcessGone": useOnRenderProcessGone,
       "overScrollMode": overScrollMode?.toNativeValue(),
       "networkAvailable": networkAvailable,
@@ -406,6 +410,7 @@ class AndroidInAppWebViewOptions
         map["regexToCancelSubFramesLoading"];
     instance.useHybridComposition = map["useHybridComposition"];
     instance.useShouldInterceptRequest = map["useShouldInterceptRequest"];
+    instance.useShouldInterceptResponse = map["useShouldInterceptResponse"];
     instance.useOnRenderProcessGone = map["useOnRenderProcessGone"];
     instance.overScrollMode =
         AndroidOverScrollMode.fromNativeValue(map["overScrollMode"]);
