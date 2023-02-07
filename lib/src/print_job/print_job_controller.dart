@@ -82,7 +82,7 @@ class PrintJobController implements Disposable {
   ///
   ///**Supported Platforms/Implementations**:
   ///- iOS
-  Future<void> dismiss({bool animated: true}) async {
+  Future<void> dismiss({bool animated = true}) async {
     Map<String, dynamic> args = <String, dynamic>{};
     args.putIfAbsent("animated", () => animated);
     await _channel.invokeMethod('dismiss', args);

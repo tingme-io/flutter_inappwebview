@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:typed_data';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../types/android_resource.dart';
 import '../types/custom_tabs_navigation_event_type.dart';
